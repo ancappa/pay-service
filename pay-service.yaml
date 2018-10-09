@@ -1,0 +1,798 @@
+swagger: '2.0'
+info:
+  description: Pay services
+  version: '1.0'
+  title: pay-service documentation
+  termsOfService: 'urn:tos'
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+host: 'localhost:8080'
+basePath: /
+tags:
+  - name: nets-mock-controller
+    description: Nets Mock Controller
+  - name: pay-controller
+    description: Pay Controller
+paths:
+  /api/pay/add:
+    post:
+      tags:
+        - pay-controller
+      summary: Add a payment method in pay
+      operationId: addUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: request
+          description: request
+          required: true
+          schema:
+            $ref: '#/definitions/PayMethodsAddRequest'
+        - name: SessionID
+          in: header
+          description: 'PARAMETRO PASSANTE. Individua la sessione utente. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: BusinessID
+          in: header
+          description: 'PARAMETRO PASSANTE. Individua il processo di business. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: MessageID
+          in: header
+          description: 'PARAMETRO NON PASSANTE. Identificativo univoco del singolo messaggio. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: TransactionID
+          in: header
+          description: 'PARAMETRO PASSANTE. Identificativo univoco della transazione. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: SourceSystem
+          in: header
+          description: 'PARAMETRO NON PASSANTE. Identificativo del sistema chiamante. LOV: WEB, APP, MSITE, CBE, DCA'
+          required: true
+          type: string
+        - name: Channel
+          in: header
+          description: 'PARAMETRO PASSANTE. Canale da cui parte la richiesta. LOV: MYTIMWEB, MYTIMAPP, MYTIMMSITE'
+          required: true
+          type: string
+        - name: InteractionDate-Date
+          in: header
+          description: 'Data interazione utente iniziale. Creato da APP FE, sovrascritto da CBE e poi passante per gli altri sistemi. Formato: YYYY-MM-DD'
+          required: true
+          type: string
+        - name: InteractionDate-Time
+          in: header
+          description: 'Orario interazione utente iniziale. Creato da APP FE, sovrascritto da CBE e poi passante per gli altri sistemi. Formato: HH:MM:SS'
+          required: true
+          type: string
+        - name: DeviceType
+          in: header
+          description: 'Solo per APP. Indica il tipo di device da cui viene la richiesta. Passante tra APP FE e CBE. LOV: ANDROID, SMARTPHONE, TABLET, I-PAD, IPHONE'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Operation success
+          schema:
+            $ref: '#/definitions/InitPaymentResponse'
+        '201':
+          description: Created
+        '400':
+          description: Missing or wrong mandatory parameters
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '503':
+          description: Service unavailable
+  /api/pay/find:
+    get:
+      tags:
+        - pay-controller
+      summary: Find payment methods stored in pay
+      operationId: findUsingGET_1
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: SessionID
+          in: header
+          description: 'PARAMETRO PASSANTE. Individua la sessione utente. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: BusinessID
+          in: header
+          description: 'PARAMETRO PASSANTE. Individua il processo di business. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: MessageID
+          in: header
+          description: 'PARAMETRO NON PASSANTE. Identificativo univoco del singolo messaggio. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: TransactionID
+          in: header
+          description: 'PARAMETRO PASSANTE. Identificativo univoco della transazione. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: SourceSystem
+          in: header
+          description: 'PARAMETRO NON PASSANTE. Identificativo del sistema chiamante. LOV: WEB, APP, MSITE, CBE, DCA'
+          required: true
+          type: string
+        - name: Channel
+          in: header
+          description: 'PARAMETRO PASSANTE. Canale da cui parte la richiesta. LOV: MYTIMWEB, MYTIMAPP, MYTIMMSITE'
+          required: true
+          type: string
+        - name: InteractionDate-Date
+          in: header
+          description: 'Data interazione utente iniziale. Creato da APP FE, sovrascritto da CBE e poi passante per gli altri sistemi. Formato: YYYY-MM-DD'
+          required: true
+          type: string
+        - name: InteractionDate-Time
+          in: header
+          description: 'Orario interazione utente iniziale. Creato da APP FE, sovrascritto da CBE e poi passante per gli altri sistemi. Formato: HH:MM:SS'
+          required: true
+          type: string
+        - name: DeviceType
+          in: header
+          description: 'Solo per APP. Indica il tipo di device da cui viene la richiesta. Passante tra APP FE e CBE. LOV: ANDROID, SMARTPHONE, TABLET, I-PAD, IPHONE'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Operation success
+          schema:
+            $ref: '#/definitions/GetBillingInfoResponse'
+        '400':
+          description: Missing or wrong mandatory parameters
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '503':
+          description: Service unavailable
+  /api/pay/verify:
+    get:
+      tags:
+        - pay-controller
+      summary: Verify a payment method add operation
+      operationId: verifyUsingGET_1
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: paymentId
+          in: query
+          description: paymentId
+          required: true
+          type: string
+        - name: txId
+          in: query
+          description: txId
+          required: true
+          type: string
+        - name: SessionID
+          in: header
+          description: 'PARAMETRO PASSANTE. Individua la sessione utente. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: BusinessID
+          in: header
+          description: 'PARAMETRO PASSANTE. Individua il processo di business. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: MessageID
+          in: header
+          description: 'PARAMETRO NON PASSANTE. Identificativo univoco del singolo messaggio. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: TransactionID
+          in: header
+          description: 'PARAMETRO PASSANTE. Identificativo univoco della transazione. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: SourceSystem
+          in: header
+          description: 'PARAMETRO NON PASSANTE. Identificativo del sistema chiamante. LOV: WEB, APP, MSITE, CBE, DCA'
+          required: true
+          type: string
+        - name: Channel
+          in: header
+          description: 'PARAMETRO PASSANTE. Canale da cui parte la richiesta. LOV: MYTIMWEB, MYTIMAPP, MYTIMMSITE'
+          required: true
+          type: string
+        - name: InteractionDate-Date
+          in: header
+          description: 'Data interazione utente iniziale. Creato da APP FE, sovrascritto da CBE e poi passante per gli altri sistemi. Formato: YYYY-MM-DD'
+          required: true
+          type: string
+        - name: InteractionDate-Time
+          in: header
+          description: 'Orario interazione utente iniziale. Creato da APP FE, sovrascritto da CBE e poi passante per gli altri sistemi. Formato: HH:MM:SS'
+          required: true
+          type: string
+        - name: DeviceType
+          in: header
+          description: 'Solo per APP. Indica il tipo di device da cui viene la richiesta. Passante tra APP FE e CBE. LOV: ANDROID, SMARTPHONE, TABLET, I-PAD, IPHONE'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Operation success
+          schema:
+            $ref: '#/definitions/VerifyPaymentResponse'
+        '400':
+          description: Missing or wrong mandatory parameters
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '503':
+          description: Service unavailable
+  '/api/pay/{billAccntId}':
+    delete:
+      tags:
+        - pay-controller
+      summary: Delete a payment method in pay
+      operationId: deleteUsingDELETE
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: billAccntId
+          in: path
+          description: billAccntId
+          required: true
+          type: string
+        - name: SessionID
+          in: header
+          description: 'PARAMETRO PASSANTE. Individua la sessione utente. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: BusinessID
+          in: header
+          description: 'PARAMETRO PASSANTE. Individua il processo di business. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: MessageID
+          in: header
+          description: 'PARAMETRO NON PASSANTE. Identificativo univoco del singolo messaggio. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: TransactionID
+          in: header
+          description: 'PARAMETRO PASSANTE. Identificativo univoco della transazione. Formato: UUID 24 caratteri esadecimali'
+          required: true
+          type: string
+        - name: SourceSystem
+          in: header
+          description: 'PARAMETRO NON PASSANTE. Identificativo del sistema chiamante. LOV: WEB, APP, MSITE, CBE, DCA'
+          required: true
+          type: string
+        - name: Channel
+          in: header
+          description: 'PARAMETRO PASSANTE. Canale da cui parte la richiesta. LOV: MYTIMWEB, MYTIMAPP, MYTIMMSITE'
+          required: true
+          type: string
+        - name: InteractionDate-Date
+          in: header
+          description: 'Data interazione utente iniziale. Creato da APP FE, sovrascritto da CBE e poi passante per gli altri sistemi. Formato: YYYY-MM-DD'
+          required: true
+          type: string
+        - name: InteractionDate-Time
+          in: header
+          description: 'Orario interazione utente iniziale. Creato da APP FE, sovrascritto da CBE e poi passante per gli altri sistemi. Formato: HH:MM:SS'
+          required: true
+          type: string
+        - name: DeviceType
+          in: header
+          description: 'Solo per APP. Indica il tipo di device da cui viene la richiesta. Passante tra APP FE e CBE. LOV: ANDROID, SMARTPHONE, TABLET, I-PAD, IPHONE'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Operation success
+          schema:
+            $ref: '#/definitions/EnrollDeactivateResponse'
+        '204':
+          description: No Content
+        '400':
+          description: Missing or wrong mandatory parameters
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '503':
+          description: Service unavailable
+definitions:
+  Address:
+    type: object
+    properties:
+      city:
+        type: string
+      countryCode:
+        type: string
+      postalCode:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      street2:
+        type: string
+      street3:
+        type: string
+  Amount:
+    type: object
+    properties:
+      currency:
+        type: string
+      value:
+        type: integer
+        format: int32
+  BillingData:
+    type: object
+    properties:
+      billAccntId:
+        type: string
+      merCustId:
+        type: string
+  BuyerInit:
+    type: object
+    properties:
+      account:
+        type: string
+      email:
+        type: string
+      imei:
+        type: string
+      language:
+        type: string
+      lastName:
+        type: string
+      msisdn:
+        type: string
+      name:
+        type: string
+  CCData:
+    type: object
+    properties:
+      brand:
+        type: string
+      expDate:
+        type: string
+      maskedPan:
+        type: string
+  CardInfo:
+    type: object
+    properties:
+      brand:
+        type: string
+      expDate:
+        type: string
+      maskedpan:
+        type: string
+  CustomerDataOut:
+    type: object
+    properties:
+      billingData:
+        $ref: '#/definitions/BillingData'
+      ccData:
+        $ref: '#/definitions/CCData'
+      opStatus:
+        $ref: '#/definitions/OpStatus'
+      payInstrData:
+        $ref: '#/definitions/PayInstrData'
+      piStatus:
+        $ref: '#/definitions/PiStatus'
+      sepaData:
+        $ref: '#/definitions/SEPAData'
+  EnrollDeactivateResponse:
+    type: object
+    properties:
+      customerDataList:
+        type: array
+        items:
+          $ref: '#/definitions/CustomerDataOut'
+      merInfo:
+        $ref: '#/definitions/MerInfo'
+  GetBillingInfoResponse:
+    type: object
+    properties:
+      customerDataList:
+        type: array
+        items:
+          $ref: '#/definitions/CustomerDataOut'
+      merInfo:
+        $ref: '#/definitions/MerInfo'
+  InitPaymentRequest:
+    type: object
+    properties:
+      buyer:
+        $ref: '#/definitions/BuyerInit'
+      callbackURL:
+        type: string
+      errorURL:
+        type: string
+      notifyURL:
+        type: string
+      order:
+        $ref: '#/definitions/Order'
+      pi:
+        $ref: '#/definitions/PaymentInstrumentInfoPay'
+      poiInfo:
+        $ref: '#/definitions/PoiProcessorInfoType'
+      txHead:
+        $ref: '#/definitions/TransactionData'
+      txReq:
+        $ref: '#/definitions/TransactionRequest'
+  InitPaymentResponse:
+    type: object
+    properties:
+      paymentId:
+        type: string
+      redirectURL:
+        type: string
+      txHead:
+        $ref: '#/definitions/TransactionRespData'
+  MerInfo:
+    type: object
+    properties:
+      merId:
+        type: string
+  OpStatus:
+    type: object
+    properties:
+      errDescription:
+        type: string
+      resultCode:
+        type: string
+      status:
+        type: string
+        enum:
+          - INSERTED
+          - UPDATED
+          - REJECTED
+  Order:
+    type: object
+    properties:
+      billingAddress:
+        $ref: '#/definitions/Address'
+      billingEmail:
+        type: string
+      billingFax:
+        type: string
+      billingName:
+        type: string
+      billingPhone:
+        type: string
+      destinationAddress:
+        $ref: '#/definitions/Address'
+      destinationDate:
+        type: string
+      destinationEmail:
+        type: string
+      destinationFax:
+        type: string
+      destinationName:
+        type: string
+      destinationPhone:
+        type: string
+      freightAmount:
+        $ref: '#/definitions/Amount'
+      invoiceExpirationDate:
+        type: string
+      invoiceNumber:
+        type: string
+      note:
+        type: string
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/Product'
+      senderCountryCode:
+        type: string
+      senderPostalCode:
+        type: string
+      taxAmount:
+        $ref: '#/definitions/Amount'
+      vatCode:
+        type: string
+  PayInstrData:
+    type: object
+    properties:
+      pi:
+        type: string
+      pitype:
+        type: string
+        enum:
+          - CC
+          - SEPA
+          - AMZP
+          - PPAL
+          - PPAS
+  PayMethodsAddRequest:
+    type: object
+    required:
+      - billAccntId
+    properties:
+      billAccntId:
+        type: string
+        example: CC 1
+        description: Payment alias name
+      callbackURL:
+        type: string
+        example: 'https://www.merchant.com/callback'
+        description: Merchant callback url. If not passsed a config value will be used
+      errorURL:
+        type: string
+        example: 'https://www.merchant.com/error'
+        description: Merchant error url. If not passsed a config value will be used
+      notifyURL:
+        type: string
+        example: 'https://www.merchant.com/notify'
+        description: Merchant notify url. If not passsed a config value will be used
+  Payer:
+    type: object
+    properties:
+      email:
+        type: string
+      lastName:
+        type: string
+      msisdn:
+        type: string
+      name:
+        type: string
+  PaymentInstrumentInfoBase:
+    type: object
+    properties:
+      tokenValue:
+        type: string
+  PaymentInstrumentInfoP:
+    type: object
+    properties:
+      billAccntId:
+        type: string
+      merCustId:
+        type: string
+      tokenValue:
+        type: string
+  PiStatus:
+    type: object
+    properties:
+      dtDeactivate:
+        type: string
+      dtEvent:
+        type: string
+      errDescription:
+        type: string
+      insDt:
+        type: string
+      resultCode:
+        type: string
+      status:
+        type: string
+        enum:
+          - PENDING_SUBMISSION
+          - WAITING_CONFIRM_SUBMISSION
+          - ACTIVE
+          - INACTIVE
+          - PENDING_REVOKE
+          - WAITING_CONFIRM_REVOKE
+  PoiProcessorInfoBase:
+    type: object
+    properties:
+      pitype:
+        type: string
+        enum:
+          - CC
+          - SFRT
+          - AMZP
+          - PPAL
+          - PPOI
+          - SPAY
+          - AIDA
+          - ALIP
+          - PPAS
+          - UCSC
+          - MYBK
+          - UCPO
+          - APAY
+      poiId:
+        type: string
+  PoiProcessorInfoType:
+    type: object
+    properties:
+      pitype:
+        type: string
+        enum:
+          - CC
+          - SFRT
+          - AMZP
+          - PPAL
+          - PPOI
+          - SPAY
+          - AIDA
+          - ALIP
+          - PPAS
+          - UCSC
+          - MYBK
+          - UCPO
+          - APAY
+  ProcessorResponse:
+    type: object
+    properties:
+      authCode:
+        type: string
+      procId:
+        type: string
+  Product:
+    type: object
+    properties:
+      amount:
+        $ref: '#/definitions/Amount'
+      code:
+        type: string
+      description:
+        type: string
+      imgURL:
+        type: string
+      items:
+        type: integer
+        format: int32
+  SEPAData:
+    type: object
+    properties:
+      bicSwift:
+        type: string
+      billingBusinessName:
+        type: string
+      billingCity:
+        type: string
+      billingCountryCode:
+        type: string
+      billingName:
+        type: string
+      billingPostalCode:
+        type: string
+      billingState:
+        type: string
+      billingStreet:
+        type: string
+      billingStreet2:
+        type: string
+      billingStreet3:
+        type: string
+      billingSurname:
+        type: string
+      billingVatCode:
+        type: string
+      mandateDtOfSign:
+        type: string
+      mandateId:
+        type: string
+      seda:
+        type: boolean
+      subscriberVatCode:
+        type: string
+  ThreeDDataBase:
+    type: object
+    properties:
+      authStatus:
+        type: string
+        enum:
+          - 'Y'
+          - 'N'
+          - U
+          - A
+      enrStatus:
+        type: string
+        enum:
+          - 'Y'
+          - 'N'
+          - U
+  TransactionData:
+    type: object
+    properties:
+      merId:
+        type: string
+      txId:
+        type: string
+  TransactionRequest:
+    type: object
+    properties:
+      amount:
+        $ref: '#/definitions/Amount'
+      customerRef:
+        type: string
+      description:
+        type: string
+      merTxInfo:
+        type: array
+        items:
+          type: string
+      txDt:
+        type: string
+      txExpDt:
+        type: string
+      txOp:
+        type: string
+        enum:
+          - VERIFICATION
+          - RESERVATION
+          - SALE
+          - TOKENIZATION
+  TransactionRespData:
+    type: object
+    properties:
+      errDescription:
+        type: string
+      merId:
+        type: string
+      resultCode:
+        type: string
+      txId:
+        type: string
+  TransactionResponse:
+    type: object
+    properties:
+      merTxInfo:
+        type: array
+        items:
+          type: string
+      paymentId:
+        type: string
+      status:
+        type: string
+        enum:
+          - OK
+          - PENDING
+          - KO
+      tranId:
+        type: integer
+        format: int64
+  VerifyPaymentResponse:
+    type: object
+    properties:
+      cardInfo:
+        $ref: '#/definitions/CardInfo'
+      nssResult:
+        type: string
+      order:
+        $ref: '#/definitions/Order'
+      payer:
+        $ref: '#/definitions/Payer'
+      pi:
+        $ref: '#/definitions/PaymentInstrumentInfoBase'
+      poiInfo:
+        $ref: '#/definitions/PoiProcessorInfoBase'
+      procRes:
+        $ref: '#/definitions/ProcessorResponse'
+      receiptPdf:
+        type: string
+        format: byte
+      threeD:
+        $ref: '#/definitions/ThreeDDataBase'
+      txHead:
+        $ref: '#/definitions/TransactionRespData'
+      txRes:
+        $ref: '#/definitions/TransactionResponse'
