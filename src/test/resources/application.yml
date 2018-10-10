@@ -2,7 +2,3 @@
 integration:
   nets:
     capture: "${nets_capture_path:https://testeps.netswgroup.it}"
-    find: "${nets_find_path:https://testeps.netswgroup.it}"
-    init: "${nets_init_path:https://testeps.netswgroup.it}"
-    verify: "${nets_verify_path:https://testeps.netswgroup.it}"
-    deactivate: "${nets_deactivate_path:https://testeps.netswgroup.it}"   
