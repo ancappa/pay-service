@@ -1,18 +1,13 @@
 package it.tim.pay.web;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -23,17 +18,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import it.tim.pay.aspects.Loggable;
 import it.tim.pay.common.headers.TimHeaders;
-import it.tim.pay.model.p.integration.CapturePaymentRequest;
 import it.tim.pay.model.p.integration.CapturePaymentResponse;
 import it.tim.pay.model.p.integration.InitPaymentResponse;
-import it.tim.pay.model.p.integration.VerifyPaymentResponse;
-import it.tim.pay.model.w.integration.CustomerDataOut;
-import it.tim.pay.model.w.integration.EnrollDeactivateResponse;
-import it.tim.pay.model.w.integration.GetBillingInfoResponse;
 import it.tim.pay.model.web.PayMethodsAddRequest;
 import it.tim.pay.service.Services;
-import it.tim.pay.validator.PayControllerValidator;
-import it.tim.pay.web.mock.NetsMockController;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -61,7 +49,6 @@ public class PayController {
 	}
 
     
-    ////////////////////////////////////////////////////////////////
     @RequestMapping(method = RequestMethod.POST, value = "/capture", produces = "application/json")
     @ApiOperation(value = "Add a payment method in pay", response = InitPaymentResponse.class)
     @ApiImplicitParams({
@@ -93,13 +80,11 @@ public class PayController {
 									@RequestHeader(value = "sessionID", required = false) String xSessionID,
 									@RequestBody  PayMethodsAddRequest request) {// CapturePaymentRequest request) {		
     	//PayControllerValidator.validateRequest4Init(headers, request.getPaymentType());   	
-    	log.info("Called Pay Controller 1............................");
-    	String userReference = "anna";//headers.getSession().getUserReference();
-    	String email = "annamaria.cappa@eng.it";//headers.getSession().getUserAccount();
-    	// transactionID get from headers
-    	String transactionID = xTransactionID;
-   	
-    	return services.capture(transactionID, request);		
+    	log.info("Calling Pay Controller...");
+    	//String userReference = "anna";//headers.getSession().getUserReference();
+    	//String email = "annamaria.cappa@eng.it";//headers.getSession().getUserAccount();
+    	   	
+    	return services.capture(request);		
     }
     
     
