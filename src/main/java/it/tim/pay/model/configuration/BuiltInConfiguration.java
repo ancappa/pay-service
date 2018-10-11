@@ -22,12 +22,13 @@ public class BuiltInConfiguration {
     private String errorURL;
     private String callbackURL;
     private String notifyURL;
+    private String validpaysystem;
     
     public BuiltInConfiguration() {
 	}
 
 	public BuiltInConfiguration(String merId, String secret, String timeOffset, String host, String keystorePath,
-			String keystoreAlias, String keystorePass, String errorURL, String callbackURL, String notifyURL, String secretCF, String isCFEncrypted) {
+			String keystoreAlias, String keystorePass, String errorURL, String callbackURL, String notifyURL, String validpaysystem, String secretCF, String isCFEncrypted) {
 		super();
 		this.merId = merId;
 		this.secret = secret;
@@ -39,6 +40,7 @@ public class BuiltInConfiguration {
 		this.errorURL = errorURL;
 		this.callbackURL = callbackURL;
 		this.notifyURL = notifyURL;
+		this.validpaysystem = validpaysystem;
 		this.isCFEncrypted = isCFEncrypted;
 		this.secretCF = secretCF;
 	}
