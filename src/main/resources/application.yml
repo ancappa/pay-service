@@ -16,6 +16,7 @@ builtin:
   errorURL: "${error_url:https://www.merchant.com/error}"
   callbackURL: "${callback_url:https://www.merchant.com/callback}"
   notifyURL: "${notify_url:https://www.merchant.com/notify}"
+  validpaysystem: "${validpaysystem:NTS}"
   
 ---
 hystrix:
