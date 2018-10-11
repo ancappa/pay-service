@@ -36,64 +36,16 @@ public class Services {
 	}
 
 
-
-	/*  Capture ********************* */
-	//public CapturePaymentResponse capture(String merCustId, PayMethodsAddRequest payMethodsAddRequest, String email){
-	private CapturePaymentResponse captureOLD(String userReference ,CapturePaymentRequest request, String email){
-
-		log.info("Called service capture ............................");
-		CapturePaymentRequest capturePaymentRequest = new CapturePaymentRequest();
-
-		TransactionData txHead = new TransactionData();
-		txHead.setMerId(bIC.getMerId());
-
-		try {
-			txHead.setTxId(generateUUID());
-		} catch (UnsupportedEncodingException e) {
-			txHead.setTxId(generateTransactionId(30));
-		} 
-
-		capturePaymentRequest.setTxHead(txHead);
-
-		TransactionRequest txReq = new TransactionRequest();
-		//txReq.setTxOp(TxOpEnum.VERIFICATION);
-
-		capturePaymentRequest.setTxReq(txReq);
-
-
-
-		/*
-    	PoiProcessorInfoType poiInfo = new PoiProcessorInfoType() ;
-    	poiInfo.setPitype(PitypeEnum.valueOf(payMethodsAddRequest.getPaymentType()));
-		capturePaymentRequest.setPoiInfo(poiInfo);
-
-    	PaymentInstrumentInfoPay pi = new PaymentInstrumentInfoPay();
-    	pi.setBillAccntId(payMethodsAddRequest.getBillAccntId());
-
-
-    	if(bIC.getIsCFEncrypted().equals("true"))
-    		pi.setMerCustId(CipherUtil.encrypt(bIC.getSecretCF(), merCustId));
-    	else
-    		pi.setMerCustId(merCustId);
-
-		capturePaymentRequest.setPi(pi);
-
-
-		capturePaymentRequest.setErrorURL(bIC.getErrorURL());
-		capturePaymentRequest.setCallbackURL(bIC.getErrorURL());
-		capturePaymentRequest.setNotifyURL(bIC.getNotifyURL());	
-		 */
-
-		return proxy.capture(capturePaymentRequest);
-	}
-
-
 	public CapturePaymentResponse capture(PayMethodsAddRequest payMethodsAddRequest){
 
 		log.info("Calling service capture...");
 
-		if (payMethodsAddRequest.getPaymentSystem().trim().equalsIgnoreCase("NETS")){
-
+		String validSystemPayment = bIC.getValidpaysystem();
+		log.info("Received payment system " + payMethodsAddRequest.getPaymentSystem());
+		
+		if (payMethodsAddRequest.getPaymentSystem().trim().equalsIgnoreCase(validSystemPayment) 
+				|| payMethodsAddRequest.getPaymentSystem().trim().isEmpty()){
+		
 			CapturePaymentRequest capturePaymentRequest = new CapturePaymentRequest();
 
 			// setMerId
